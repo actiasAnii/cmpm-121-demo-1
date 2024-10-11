@@ -9,31 +9,45 @@ document.title = gameName;
 const header = document.createElement("h1");
 header.innerHTML = gameName;
 header.style.textAlign = "center"; // center align the header text
-app.append(header);                // add title text to the game
+app.append(header); // add title text to the game
 
-// create tbutton element
-const button = document.createElement('button');
-button.textContent = '🐟';
+// group button and counter together with a div
+const mainClicker = document.createElement("div");
+mainClicker.style.display = "flex";
+mainClicker.style.justifyContent = "center";
+mainClicker.style.alignItems = "center";
+mainClicker.style.flexDirection = "column"; // stack elements vertically
+mainClicker.style.height = "calc(100vh - 60px)"; // height minus space for header
+
+// create button
+const button = document.createElement("button");
+button.textContent = "🐟";
 
 // set button style
-button.style.fontSize = '150px';        // make emoji big
-button.style.padding = '0';             // remove default padding
-button.style.border = 'none';           // remove default border
-button.style.background = 'none';       // remove default background
-button.style.cursor = 'pointer';        // make the cursor a pointer
-button.style.position = 'absolute';     // set position
-button.style.top = '30%';               // position relative to app
-button.style.left = '50%';
-button.style.transform = 'translate(-50%, -50%)'; //shift button to align better
-
-// make sure app container is positioned relative to allow absolute positioning of the button
-app.style.position = 'relative';
-app.style.height = '100vh';              // make sure app fills viewport
+button.style.fontSize = "150px"; // make emoji big
+button.style.padding = "0"; // remove default padding
+button.style.border = "none"; // remove default border
+button.style.background = "none"; // remove default background
+button.style.cursor = "pointer"; // make the cursor a pointer
 
 // append the button to the app element
-app.appendChild(button);
+mainClicker.appendChild(button);
 
-// register clicks
-button.addEventListener('click', () => {
-    console.log("You've caught a fish!");
+// create counter
+let counter: number = 0;
+const counterDisplay = document.createElement("div");
+counterDisplay.style.fontSize = "24px"; // set font size
+counterDisplay.style.marginTop = "20px"; // space from the element above it
+counterDisplay.textContent = `${counter} fish caught`; // display value of counter
+
+// add to the clicker div
+mainClicker.appendChild(counterDisplay);
+
+// append clicker div to the app
+app.appendChild(mainClicker);
+
+// register clicks and increase counter
+button.addEventListener("click", () => {
+  counter++;
+  counterDisplay.textContent = `${counter} fish caught`;
 });
