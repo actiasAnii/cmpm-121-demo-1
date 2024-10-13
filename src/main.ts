@@ -2,51 +2,68 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-// set game name and header
+// helper function to create elements and set styles
+function createElement<K extends keyof HTMLElementTagNameMap>(
+  tag: K,                                                                         // type of html element
+  options: { styles?: Partial<CSSStyleDeclaration>; textContent?: string } = {}   // object holding styles and textContent properties
+): HTMLElementTagNameMap[K] {                                                     // return type is based on tag
+  const element = document.createElement(tag);                                    // create the element using the tag
+  if (options.styles) Object.assign(element.style, options.styles);               // if styles are in options, apply to the element
+  if (options.textContent) element.textContent = options.textContent;             // if textContent is in options, apply to the element
+  return element;                                                                 // return created element
+}
+
+// set game name and document title
 const gameName = "Gone Fishin'";
 document.title = gameName;
 
-const header = document.createElement("h1");
-header.innerHTML = gameName;
-header.style.textAlign = "center"; // center align the header text
-app.append(header); // add title text to the game
+// create header element
+const header = createElement("h1", {
+  textContent: gameName,
+  styles: { textAlign: "center" }
+});
+app.appendChild(header);
 
-// group button and counter together with a div
-const mainClicker = document.createElement("div");
-mainClicker.style.display = "flex";
-mainClicker.style.justifyContent = "center";
-mainClicker.style.alignItems = "center";
-mainClicker.style.flexDirection = "column"; // stack elements vertically
-mainClicker.style.height = "calc(100vh - 60px)"; // height minus space for header
-
-// create button
-const button = document.createElement("button");
-button.textContent = "🐟";
-
-// set button style
-button.style.fontSize = "150px"; // make emoji big
-button.style.padding = "0"; // remove default padding
-button.style.border = "none"; // remove default border
-button.style.background = "none"; // remove default background
-button.style.cursor = "pointer"; // make the cursor a pointer
-
-// append the button to the app element
-mainClicker.appendChild(button);
-
-// create counter
-let counter: number = 0;
-const counterDisplay = document.createElement("div");
-counterDisplay.style.fontSize = "24px"; // set font size
-counterDisplay.style.marginTop = "20px"; // space from the element above it
-counterDisplay.textContent = `${counter} fish caught`; // display value of counter
-
-// add to the clicker div
-mainClicker.appendChild(counterDisplay);
-
-// append clicker div to the app
+// create main clicker container
+const mainClicker = createElement("div", {
+  styles: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    height: "calc(100vh - 60px)"
+  }
+});
+// append clicker container to app
 app.appendChild(mainClicker);
 
-// register clicks and increase counter
+// create button element
+const button = createElement("button", {
+  textContent: "🐟",
+  styles: {
+    fontSize: "150px",
+    padding: "0",
+    border: "none",
+    background: "none",
+    cursor: "pointer"
+  }
+});
+// append button to clicker container
+mainClicker.appendChild(button);
+
+// create counter display
+let counter = 0;
+const counterDisplay = createElement("div", {
+  textContent: `${counter} fish caught`,
+  styles: {
+    fontSize: "24px",
+    marginTop: "20px"
+  }
+});
+// append counter display to clicker container
+mainClicker.appendChild(counterDisplay);
+
+// add event listener to button to increase counter
 button.addEventListener("click", () => {
   counter++;
   counterDisplay.textContent = `${counter} fish caught`;
