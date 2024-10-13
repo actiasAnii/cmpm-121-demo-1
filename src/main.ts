@@ -67,7 +67,7 @@ mainClicker.appendChild(counterDisplay);
 // function to increase the counter and update the display
 function catchFish(amount: number) {
   counter += amount; // increase the counter by the given amount
-  counterDisplay.textContent = `${counter} fish caught`; // update the display
+  counterDisplay.textContent = `${counter.toFixed(2)} fish caught`; // update the display
 }
 
 // add event listener to button to increase counter
@@ -75,7 +75,21 @@ button.addEventListener("click", () => {
   catchFish(1);
 });
 
-// increment counter using set interval
-setInterval(() => {
-  catchFish(1);
-}, 1000);
+// use requestAnimationFrame to increment counter
+let lastTime = 0;
+
+function updateCounter(timestamp: number) {
+  if (!lastTime) lastTime = timestamp; // set initial timestamp if first frame
+
+  const deltaTime = timestamp - lastTime; // calculate time difference since the last frame
+  lastTime = timestamp; // update last frame time
+
+  const increaseAmt = deltaTime / 1000; // calculate how much to increase based on elapsed time
+  catchFish(increaseAmt); // increase counter
+
+  // request next animation frame
+  requestAnimationFrame(updateCounter);
+}
+
+// start the animation loop
+requestAnimationFrame(updateCounter);
