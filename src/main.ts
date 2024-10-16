@@ -68,7 +68,7 @@ mainClicker.appendChild(counterDisplay);
 
 // create current growth rate display
 const growthRateDisplay = createElement("div", {
-  textContent: `Current Growth Rate: ${growthRate.toFixed(1)} fish/sec`,
+  textContent: `Current Catch Rate: ${growthRate.toFixed(1)} fish/sec`,
   styles: {
     fontSize: "20px",
     marginTop: "10px",
@@ -95,9 +95,9 @@ app.appendChild(upgradeContainer);
 
 // create upgrade data for items A, B, and C
 const upgrades = [
-  { name: "A", cost: 10, rate: 0.1, count: 0 },
-  { name: "B", cost: 100, rate: 2.0, count: 0 },
-  { name: "C", cost: 1000, rate: 50.0, count: 0 },
+  { name: "Upgraded Fishing Rod", cost: 10, rate: 0.1, count: 0 },
+  { name: "Fishing Net", cost: 100, rate: 2.0, count: 0 },
+  { name: "Assistant Angler", cost: 1000, rate: 50.0, count: 0 },
 ];
 
 // function to create upgrade buttons and display purchased count
@@ -114,8 +114,8 @@ upgrades.forEach((upgrade) => {
   upgradeButton.disabled = true; // disable initially
 
   const upgradeDisplay = createElement("div", {
-    textContent: `${upgrade.name} purchased: ${upgrade.count}`,
-    styles: { fontSize: "16px", textAlign: "left" },
+    textContent: `${upgrade.name}'s purchased: ${upgrade.count}`,
+    styles: { fontSize: "16px", textAlign: "center", color: "black" },
   });
 
   // add event listener to the button for upgrading
@@ -158,7 +158,7 @@ upgrades.forEach((upgrade) => {
 // function to increase the counter and update the display
 function catchFish(amount: number) {
   counter += amount;
-  counterDisplay.textContent = `${counter.toFixed(2)} fish caught`;
+  counterDisplay.textContent = `${counter.toFixed(2)} Fish Caught`;
 }
 
 // add event listener to button to increase counter
