@@ -123,7 +123,13 @@ upgrades.forEach((upgrade) => {
     if (counter >= upgrade.cost) {
       catchFish(-upgrade.cost); // deduct cost
       growthRate += upgrade.rate; // increase growth rate
-      upgrade.count += 1; // increment count of upgrades -> will be increasing cost based on count
+      upgrade.count += 1; // increment count of upgrades -> nvm. will be using to cap upgrades ?
+
+      // increase the cost by 1.15 after each purchase
+      upgrade.cost *= 1.15;
+
+      // Update the button and display with the new cost and count
+      upgradeButton.textContent = `Buy ${upgrade.name} (+${upgrade.rate} fish/sec, costs ${upgrade.cost.toFixed(2)})`;
       upgradeDisplay.textContent = `${upgrade.name} purchased: ${upgrade.count}`;
       growthRateDisplay.textContent = `Current Growth Rate: ${growthRate.toFixed(1)} fish/sec`;
     }
