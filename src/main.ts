@@ -5,14 +5,13 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 
 // helper function to create elements and set styles
 function createElement<K extends keyof HTMLElementTagNameMap>(
-  tag: K, // type of html element
-  options: { styles?: Partial<CSSStyleDeclaration>; textContent?: string } = {}, // object holding styles and textContent properties
+  tag: K,
+  options: { styles?: Partial<CSSStyleDeclaration>; textContent?: string } = {},
 ): HTMLElementTagNameMap[K] {
-  // return type is based on tag
-  const element = document.createElement(tag); // create the element using the tag
-  if (options.styles) Object.assign(element.style, options.styles); // if styles are in options, apply to the element
-  if (options.textContent) element.textContent = options.textContent; // if textContent is in options, apply to the element
-  return element; // return created element
+  const element = document.createElement(tag);
+  if (options.styles) Object.assign(element.style, options.styles);
+  if (options.textContent) element.textContent = options.textContent;
+  return element;
 }
 
 // set game name and document title
@@ -35,9 +34,9 @@ const mainClicker = createElement("div", {
     flexDirection: "column",
     height: "calc(100vh - 60px)",
     marginTop: "-200px",
+    position: "relative",
   },
 });
-// append clicker container to app
 app.appendChild(mainClicker);
 
 // create button element
@@ -51,7 +50,6 @@ const clickButton = createElement("button", {
     cursor: "pointer",
   },
 });
-// append button to clicker container
 mainClicker.appendChild(clickButton);
 
 // create counter and growth rate
@@ -66,29 +64,95 @@ const counterDisplay = createElement("div", {
     marginTop: "20px",
   },
 });
-// append counter display to clicker container
 mainClicker.appendChild(counterDisplay);
 
-// create upgrade button
-const upgradeButton = createElement("button", {
-  textContent: "BUY UPGRADE (+1 Growth Rate, costs 10)", //will probably change so info shows up when u hover over it
+// create current growth rate display
+const growthRateDisplay = createElement("div", {
+  textContent: `Current Growth Rate: ${growthRate.toFixed(1)} fish/sec`,
   styles: {
-    marginTop: "20px",
-    padding: "10px",
-    fontSize: "16px",
-    cursor: "pointer",
+    fontSize: "20px",
+    marginTop: "10px",
   },
 });
-upgradeButton.disabled = true; // disable the button initially
-// append upgrade button to main clicker container   //maybe change and just append to app
-mainClicker.appendChild(upgradeButton);
+mainClicker.appendChild(growthRateDisplay);
+
+// create upgrade container
+const upgradeContainer = createElement("div", {
+  styles: {
+    position: "absolute",
+    left: "10px",
+    top: "50px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px", // adds space between rows
+    padding: "10px",
+    backgroundColor: "#f0f0f0",
+    borderRadius: "8px",
+    border: "1px solid #ccc",
+  },
+});
+app.appendChild(upgradeContainer);
+
+// create upgrade data for items A, B, and C
+const upgrades = [
+  { name: "A", cost: 10, rate: 0.1, count: 0 },
+  { name: "B", cost: 100, rate: 2.0, count: 0 },
+  { name: "C", cost: 1000, rate: 50.0, count: 0 },
+];
+
+// function to create upgrade buttons and display purchased count
+upgrades.forEach((upgrade) => {
+  const upgradeButton = createElement("button", {
+    textContent: `Buy ${upgrade.name} (+${upgrade.rate} fish/sec, costs ${upgrade.cost})`,
+    styles: {
+      padding: "10px",
+      fontSize: "16px",
+      cursor: "pointer",
+      width: "100%",
+    },
+  });
+  upgradeButton.disabled = true; // disable initially
+
+  const upgradeDisplay = createElement("div", {
+    textContent: `${upgrade.name} purchased: ${upgrade.count}`,
+    styles: { fontSize: "16px", textAlign: "left" },
+  });
+
+  // add event listener to the button for upgrading
+  upgradeButton.addEventListener("click", () => {
+    if (counter >= upgrade.cost) {
+      catchFish(-upgrade.cost); // deduct cost
+      growthRate += upgrade.rate; // increase growth rate
+      upgrade.count += 1; // increment count of upgrades -> will be increasing cost based on count
+      upgradeDisplay.textContent = `${upgrade.name} purchased: ${upgrade.count}`;
+      growthRateDisplay.textContent = `Current Growth Rate: ${growthRate.toFixed(1)} fish/sec`;
+    }
+  });
+
+  const upgradeRow = createElement("div", {
+    styles: {
+      display: "flex",
+      flexDirection: "column",
+      width: "200px",
+    },
+  });
+
+  upgradeRow.appendChild(upgradeButton);
+  upgradeRow.appendChild(upgradeDisplay);
+
+  upgradeContainer.appendChild(upgradeRow);
+
+  // periodically check if the button should be enabled based on the current counter
+  setInterval(() => {
+    upgradeButton.disabled = counter < upgrade.cost;
+  }, 100);
+});
 
 //////// functionality
 // function to increase the counter and update the display
 function catchFish(amount: number) {
-  counter += amount; // increase the counter by the given amount
-  counterDisplay.textContent = `${counter.toFixed(2)} fish caught`; // update the display
-  upgradeButton.disabled = counter < 10; // enable upgrade button only if counter > 10         //make function checks this for every button when there are more buttons/changing costs?
+  counter += amount;
+  counterDisplay.textContent = `${counter.toFixed(2)} fish caught`;
 }
 
 // add event listener to button to increase counter
@@ -96,29 +160,19 @@ clickButton.addEventListener("click", () => {
   catchFish(1);
 });
 
-// add event listener to the upgrade button
-upgradeButton.addEventListener("click", () => {
-  if (counter >= 10) {
-    catchFish(-10); // deduct 10 units from counter
-    growthRate += 1; // increment growth rate by 1
-  }
-});
-
 // use requestAnimationFrame to increment counter
 let lastTime = 0;
 
 // function to handle continuous growth
 function updateCounter(timestamp: number) {
-  if (!lastTime) lastTime = timestamp; // set initial timestamp if first frame
+  if (!lastTime) lastTime = timestamp;
+  const deltaTime = timestamp - lastTime;
+  lastTime = timestamp;
 
-  const deltaTime = timestamp - lastTime; // calculate time difference since the last frame
-  lastTime = timestamp; // update last frame time
+  const increaseAmt = (deltaTime / 1000) * growthRate;
+  catchFish(increaseAmt);
 
-  const increaseAmt = (deltaTime / 1000) * growthRate; // calculate how much to increase based on elapsed time
-  catchFish(increaseAmt); // increase counter
-
-  // request next animation frame
   requestAnimationFrame(updateCounter);
 }
-// start the animation loop
+
 requestAnimationFrame(updateCounter);
