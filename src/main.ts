@@ -6,11 +6,16 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 // helper function to create elements and set styles
 function createElement<K extends keyof HTMLElementTagNameMap>(
   tag: K,
-  options: { styles?: Partial<CSSStyleDeclaration>; textContent?: string } = {},
+  options: {
+    styles?: Partial<CSSStyleDeclaration>;
+    textContent?: string;
+    title?: string;
+  } = {},
 ): HTMLElementTagNameMap[K] {
   const element = document.createElement(tag);
   if (options.styles) Object.assign(element.style, options.styles);
   if (options.textContent) element.textContent = options.textContent;
+  if (options.title) element.title = options.title;
   return element;
 }
 
@@ -93,19 +98,53 @@ const upgradeContainer = createElement("div", {
 });
 app.appendChild(upgradeContainer);
 
+// set up Upgrade interface
 interface Upgrade {
-  name: string,
-  cost: number,
-  rate: number,
-  count: 0
+  name: string;
+  cost: number;
+  rate: number;
+  count: 0;
+  description: string;
 }
 
-// create upgrade data for items A, B, and C
+// make an array of Upgrade instances
 // woops i did this in step 6 because i thought thats what it meant by "generalize your upgrade purchasing"
 const upgrades: Upgrade[] = [
-  { name: "Upgraded Fishing Rod", cost: 10, rate: 0.1, count: 0 },
-  { name: "Fishing Net", cost: 100, rate: 2.0, count: 0 },
-  { name: "Assistant Angler", cost: 1000, rate: 50.0, count: 0 },
+  {
+    name: "Better Bait",
+    cost: 10,
+    rate: 0.1,
+    count: 0,
+    description: "with better bait, the fish practically hook themselves",
+  },
+  {
+    name: "Upgraded Fishing Rod",
+    cost: 50,
+    rate: 2.0,
+    count: 0,
+    description: "an angler's pride is their rod",
+  },
+  {
+    name: "Fishing Net",
+    cost: 100,
+    rate: 10.0,
+    count: 0,
+    description: "who says you have to reel in fish to catch 'em?",
+  },
+  {
+    name: "Fishing Boat",
+    cost: 1000,
+    rate: 25.0,
+    count: 0,
+    description: "bigger boat",
+  },
+  {
+    name: "Assistant Angler",
+    cost: 5000,
+    rate: 150.0,
+    count: 0,
+    description: "more hands on deck!",
+  },
 ];
 
 // function to create upgrade buttons and display purchased count
@@ -118,6 +157,7 @@ upgrades.forEach((upgrade) => {
       cursor: "pointer",
       width: "100%",
     },
+    title: upgrade.description,
   });
   upgradeButton.disabled = true; // disable initially
 
@@ -129,14 +169,14 @@ upgrades.forEach((upgrade) => {
   // add event listener to the button for upgrading
   upgradeButton.addEventListener("click", () => {
     if (counter >= upgrade.cost) {
-      catchFish(-upgrade.cost); // deduct cost
-      growthRate += upgrade.rate; // increase growth rate
-      upgrade.count += 1; // increment count of upgrades -> nvm. will be using to cap upgrades ?
+      catchFish(-upgrade.cost);
+      growthRate += upgrade.rate;
+      upgrade.count += 1;
 
-      // increase the cost by 1.15 after each purchase
+      // increase cost by 1.15 after each purchase
       upgrade.cost *= 1.15;
 
-      // Update the button and display with the new cost and count
+      // update the button and display with the new cost and count
       upgradeButton.textContent = `Buy ${upgrade.name} (+${upgrade.rate} fish/sec, costs ${upgrade.cost.toFixed(2)})`;
       upgradeDisplay.textContent = `${upgrade.name} purchased: ${upgrade.count}`;
       growthRateDisplay.textContent = `Current Growth Rate: ${growthRate.toFixed(1)} fish/sec`;
@@ -156,7 +196,7 @@ upgrades.forEach((upgrade) => {
 
   upgradeContainer.appendChild(upgradeRow);
 
-  // periodically check if the button should be enabled based on the current counter
+  // periodically check if the button should be enabled based on current counter
   setInterval(() => {
     upgradeButton.disabled = counter < upgrade.cost;
   }, 100);
