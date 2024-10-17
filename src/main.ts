@@ -93,8 +93,16 @@ const upgradeContainer = createElement("div", {
 });
 app.appendChild(upgradeContainer);
 
+interface Upgrade {
+  name: string,
+  cost: number,
+  rate: number,
+  count: 0
+}
+
 // create upgrade data for items A, B, and C
-const upgrades = [
+// woops i did this in step 6 because i thought thats what it meant by "generalize your upgrade purchasing"
+const upgrades: Upgrade[] = [
   { name: "Upgraded Fishing Rod", cost: 10, rate: 0.1, count: 0 },
   { name: "Fishing Net", cost: 100, rate: 2.0, count: 0 },
   { name: "Assistant Angler", cost: 1000, rate: 50.0, count: 0 },
