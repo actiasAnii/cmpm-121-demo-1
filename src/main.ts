@@ -62,7 +62,7 @@ function createElement<K extends keyof HTMLElementTagNameMap>(
     styles?: Partial<CSSStyleDeclaration>;
     textContent?: string;
     title?: string;
-  } = {}
+  } = {},
 ): HTMLElementTagNameMap[K] {
   const element = document.createElement(tag);
   if (options.styles) Object.assign(element.style, options.styles);
@@ -87,7 +87,7 @@ const mainClickContainer = createElement("div", {
     alignItems: "center",
     flexDirection: "column",
     height: "calc(100vh - 60px)",
-    marginTop: "-200px",
+    marginTop: "-250px",
     position: "relative",
   },
 });
@@ -100,6 +100,8 @@ const clickButton = createElement("button", {
     padding: "0",
     border: "none",
     background: "none",
+    position: "relative",
+    animation: "MoveUpDown 2s ease-in-out infinite",
   },
 });
 mainClickContainer.appendChild(clickButton);
@@ -125,15 +127,14 @@ mainClickContainer.appendChild(growthRateDisplay);
 const upgradeContainer = createElement("div", {
   styles: {
     position: "absolute",
-    left: "10px",
+    left: "50px",
     top: "50px",
     display: "flex",
     flexDirection: "column",
     gap: "10px",
     padding: "10px",
-    backgroundColor: "#f0f0f0",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
+    backgroundColor: "#006F94",
+    borderRadius: "10px",
   },
 });
 app.appendChild(upgradeContainer);
@@ -142,19 +143,20 @@ function createUpgradeRow(upgrade: Upgrade) {
   const upgradeButton = createElement("button", {
     textContent: `Buy ${upgrade.name} (+${upgrade.rate} fish/sec, costs ${upgrade.cost})`,
     title: upgrade.description,
+    styles: { height: "80px" },
   });
   upgradeButton.disabled = true;
 
   const upgradeDisplay = createElement("div", {
     textContent: `${upgrade.name}'s purchased: ${upgrade.count}`,
-    styles: { fontSize: "16px", textAlign: "center", color: "black" },
+    styles: { fontSize: "16px", textAlign: "center", color: "#000080" },
   });
 
   const upgradeRow = createElement("div", {
     styles: {
       display: "flex",
       flexDirection: "column",
-      width: "200px",
+      width: "450px",
     },
   });
 
@@ -168,7 +170,7 @@ function handleUpgrade(
   upgrade: Upgrade,
   upgradeButton: HTMLButtonElement,
   upgradeDisplay: HTMLDivElement,
-  growthRateDisplay: HTMLDivElement
+  growthRateDisplay: HTMLDivElement,
 ) {
   upgradeButton.addEventListener("click", () => {
     if (clickCounter >= upgrade.cost) {
@@ -193,7 +195,7 @@ function updateButtonState(upgradeButton: HTMLButtonElement, upgrade: Upgrade) {
 function initializeUpgrades(
   upgrades: Upgrade[],
   upgradeContainer: HTMLDivElement,
-  growthRateDisplay: HTMLDivElement
+  growthRateDisplay: HTMLDivElement,
 ) {
   upgrades.forEach((upgrade) => {
     const { upgradeButton, upgradeDisplay, upgradeRow } =
